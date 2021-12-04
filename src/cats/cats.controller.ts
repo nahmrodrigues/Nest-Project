@@ -5,7 +5,10 @@ import {
   Get,
   // HttpStatus,
   Param,
+  ParseIntPipe,
   Post,
+  UseFilters,
+  // UsePipes,
   // Put,
   // Res,
 } from '@nestjs/common';
@@ -15,13 +18,24 @@ import { CreateCatDto } from './dto/create-cat.dto';
 // import { ListAllEntities } from './dto/list-all-entities.dto';
 import { CatsService } from './cats.service';
 import { Cat } from './interfaces/cat.interface';
+import { HttpExceptionFilter } from 'src/filters/http-exception.filter';
+// import { JoiValidationPipe } from 'src/pipes/validation.pipe';
+import { ValidationPipe } from 'src/pipes/validation.pipe';
 
 @Controller('cats')
 export class CatsController {
   constructor(private catsService: CatsService) {}
 
   @Post()
-  create(@Body() createCatDto: CreateCatDto) {
+  /* 
+    Há a possibilidade de usar a classe ao invés de uma nova instância.
+    Isso delega a responsabilidade de instanciação para o framework e
+    habilita a injeção de dependência.
+    Dessa forma, há uma redução no uso de memória.
+  */
+  @UseFilters(/*new HttpExceptionFilter()*/ HttpExceptionFilter)
+  // @UsePipes(new JoiValidationPipe(createCatSchema))
+  async create(@Body(new ValidationPipe()) createCatDto: CreateCatDto) {
     this.catsService.create(createCatDto);
   }
 
@@ -40,7 +54,11 @@ export class CatsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(
+    // we can pass an instance of built-in pipe to customize its behavior
+    // @Param('id', new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE })),
+    @Param('id', ParseIntPipe) id: number,
+  ) {
     return `This action returns a #${id} cat`;
   }
 
