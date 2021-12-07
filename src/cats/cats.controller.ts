@@ -7,7 +7,8 @@ import {
   Param,
   ParseIntPipe,
   Post,
-  UseFilters,
+  // UseFilters,
+  // UseGuards,
   // UsePipes,
   // Put,
   // Res,
@@ -18,11 +19,14 @@ import { CreateCatDto } from './dto/create-cat.dto';
 // import { ListAllEntities } from './dto/list-all-entities.dto';
 import { CatsService } from './cats.service';
 import { Cat } from './interfaces/cat.interface';
-import { HttpExceptionFilter } from 'src/filters/http-exception.filter';
+import { Roles } from 'src/decorators/roles.decorator';
+// import { HttpExceptionFilter } from 'src/filters/http-exception.filter';
 // import { JoiValidationPipe } from 'src/pipes/validation.pipe';
-import { ValidationPipe } from 'src/pipes/validation.pipe';
+// import { ValidationPipe } from 'src/pipes/validation.pipe';
+// import { RolesGuard } from 'src/guards/role.guard';
 
 @Controller('cats')
+// @UseGuards(RolesGuard)
 export class CatsController {
   constructor(private catsService: CatsService) {}
 
@@ -33,9 +37,10 @@ export class CatsController {
     habilita a injeção de dependência.
     Dessa forma, há uma redução no uso de memória.
   */
-  @UseFilters(/*new HttpExceptionFilter()*/ HttpExceptionFilter)
+  // @UseFilters(/*new HttpExceptionFilter()*/ HttpExceptionFilter)
   // @UsePipes(new JoiValidationPipe(createCatSchema))
-  async create(@Body(new ValidationPipe()) createCatDto: CreateCatDto) {
+  @Roles('admin')
+  async create(@Body() createCatDto: CreateCatDto) {
     this.catsService.create(createCatDto);
   }
 
