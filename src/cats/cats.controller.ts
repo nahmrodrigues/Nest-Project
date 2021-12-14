@@ -7,19 +7,22 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  // Req,
+  Res,
   // UseFilters,
   // UseGuards,
   // UsePipes,
   // Put,
   // Res,
 } from '@nestjs/common';
-// import { Response } from 'express';
+import { Response } from 'express';
 import { CreateCatDto } from './dto/create-cat.dto';
 // import { UpdateCatDto } from './dto/update-cat.dto';
 // import { ListAllEntities } from './dto/list-all-entities.dto';
 import { CatsService } from './cats.service';
 import { Cat } from './interfaces/cat.interface';
 import { Roles } from 'src/decorators/roles.decorator';
+// import { Request } from 'express';
 // import { HttpExceptionFilter } from 'src/filters/http-exception.filter';
 // import { JoiValidationPipe } from 'src/pipes/validation.pipe';
 // import { ValidationPipe } from 'src/pipes/validation.pipe';
@@ -54,8 +57,10 @@ export class CatsController {
   // }
 
   @Get()
-  async findAll(): Promise<Cat[]> {
-    return this.catsService.findAll();
+  async findAll(@Res({ passthrough: true }) res: Response): Promise<any> {
+    // console.log(req.body);
+    return res.locals;
+    // return this.catsService.findAll();
   }
 
   @Get(':id')

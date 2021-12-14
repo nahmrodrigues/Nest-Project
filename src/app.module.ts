@@ -1,6 +1,8 @@
 import {
+  MiddlewareConsumer,
   // MiddlewareConsumer,
   Module,
+  NestModule,
   // NestModule,
   // RequestMethod,
 } from '@nestjs/common';
@@ -12,7 +14,8 @@ import { RolesGuard } from './guards/role.guard';
 import { LoggingInterceptor } from './interceptors/logging.interceptor';
 import { TransformInterceptor } from './interceptors/transform.interceptor';
 import { ValidationPipe } from './pipes/validation.pipe';
-// import { logger } from './middleware/logger.middleware';
+import { logger } from './middleware/logger.middleware';
+import { CatsController } from './cats/cats.controller';
 
 @Module({
   imports: [CatsModule],
@@ -39,17 +42,20 @@ import { ValidationPipe } from './pipes/validation.pipe';
     },
   ],
 })
-export class AppModule {}
-// export class AppModule implements NestModule {
-//   configure(consumer: MiddlewareConsumer) {
-//     consumer
-//       .apply(logger) // accepts a list of methods
+
+// export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(logger) // accepts a list of methods
+      .forRoutes(CatsController);
+  }
+}
+
 // .exclude(
 //   { path: 'cats', method: RequestMethod.GET },
 //   { path: 'cats', method: RequestMethod.POST },
 //   'cats/(.*)',
 // )
-// .forRoutes(CatsController);
 // .forRoutes({ path: 'ab*cd', method: RequestMethod.ALL }); // wildcards
 //   }
-// }
